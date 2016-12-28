@@ -1,0 +1,1 @@
+2015-10-08 15:19:56,445 [Database.java:main:112] - Database creating error. Can not issue data manipulation statements with executeQuery().
