@@ -1,19 +1,13 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.inventory.db.manager;
 
 import com.inventory.bean.CustomerInfo;
-import com.inventory.bean.SupplierInfo;
 import com.inventory.db.Database;
 import com.inventory.db.query.helper.EasyStatement;
 import com.inventory.db.repositories.Customer;
-import com.inventory.db.repositories.Supplier;
 import com.inventory.db.repositories.Profile;
 import com.inventory.exceptions.DBSetupException;
 import com.inventory.response.ResultEvent;
+import com.inventory.util.Constants;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -29,30 +23,45 @@ public class CustomerManager {
     private Profile profile;
     private Customer customer;
     private final Logger logger = LoggerFactory.getLogger(EasyStatement.class);
+    
+    /**
+     * This method will create a new customer
+     * @param customerInfo customer info
+     * @return ResultEvent
+     * @author nazmul hasan on 28th december 2016
+     */
     public ResultEvent createCustomer(CustomerInfo customerInfo)
     {
         ResultEvent resultEvent = new ResultEvent();
-        //create a new user
         Connection connection = null;
         try {
             connection = Database.getInstance().getConnection();
-            connection.setAutoCommit(false);
-            
-            //right now group id constant. Later update it from configuraiton file
-            customerInfo.getProfileInfo().setGroupId(2);
-            
+            connection.setAutoCommit(false);            
+            customerInfo.getProfileInfo().setGroupId(Constants.GROUP_ID_CUSTOMER);            
             profile = new Profile(connection);
-            int userId = profile.createProfile(customerInfo.getProfileInfo()); 
-            
-            customerInfo.getProfileInfo().setId(userId);
-            customer = new Customer(connection);
-            customer.createCustomer(customerInfo);
-
+            int profileId = profile.createProfile(customerInfo.getProfileInfo()); 
+            if(profileId > 0)
+            {
+                customerInfo.getProfileInfo().setId(profileId);
+                customer = new Customer(connection);
+                if(customer.createCustomer(customerInfo))
+                {
+                    resultEvent.setResponseCode(2000);
+                resultEvent.setMessage("Customer is created successfully.");
+                }
+                else
+                {
+                    //set error message here
+                }
+            }
+            else
+            {
+                //set error message here
+            }
             connection.commit();
-            connection.close();
-            resultEvent.setResponseCode(2000);
-            resultEvent.setMessage("Customer is created successfully.");
+            connection.close();            
         } catch (SQLException ex) {
+            logger.error(ex.getMessage());
             try {
                 if(connection != null){
                     connection.rollback();
@@ -61,8 +70,10 @@ public class CustomerManager {
             } catch (SQLException ex1) {
                 logger.error(ex1.getMessage());
             }
+            //set error message here
         } catch (DBSetupException ex) {
             logger.error(ex.getMessage());
+            //set error message here
         }
         return resultEvent;
     }
@@ -70,6 +81,7 @@ public class CustomerManager {
     /**
      * This method will return all customers
      * @return list, customer list
+     * @author nazmul hasan on 28th december 2016
      */
     public List<CustomerInfo> getAllCustomers()
     {
@@ -83,6 +95,7 @@ public class CustomerManager {
 
             connection.close();
         } catch (SQLException ex) {
+            logger.error(ex.getMessage());
             try {
                 if(connection != null){
                     connection.close();
@@ -96,11 +109,48 @@ public class CustomerManager {
         return customerList;
     }
     
+    /**
+     * This method will update customer info
+     * @param customerInfo customer info
+     * @return ResultEvent
+     * @author nazmul hasan on 28th december 2016
+     */
     public ResultEvent updateCustomer(CustomerInfo customerInfo)
     {
         ResultEvent resultEvent = new ResultEvent();
-        resultEvent.setResponseCode(2000);
-        resultEvent.setMessage("Customer info is updated successfully.");  
+        Connection connection = null;
+        try {
+            connection = Database.getInstance().getConnection();
+            connection.setAutoCommit(false);
+            
+            profile = new Profile(connection);
+            if(profile.updateProfile(customerInfo.getProfileInfo()))
+            {
+                //right now there is no fields for customer other than profile fields
+                resultEvent.setResponseCode(2000);
+                resultEvent.setMessage("Customer info is updated successfully.");  
+            }
+            else
+            {
+                //set error message here
+            }
+            connection.commit();
+            connection.close();            
+        } catch (SQLException ex) {
+            logger.error(ex.getMessage());
+            try {
+                if(connection != null){
+                    connection.rollback();
+                    connection.close();
+                }
+            } catch (SQLException ex1) {
+                logger.error(ex1.getMessage());
+            }
+            //set error message here
+        } catch (DBSetupException ex) {
+            logger.error(ex.getMessage());
+            //set error message here
+        }
         return resultEvent;
     }
     

@@ -1,18 +1,12 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.inventory.db.manager;
 
-import com.inventory.bean.CustomerInfo;
 import com.inventory.bean.SupplierInfo;
 import com.inventory.db.Database;
-import com.inventory.db.query.helper.EasyStatement;
 import com.inventory.db.repositories.Profile;
 import com.inventory.db.repositories.Supplier;
 import com.inventory.exceptions.DBSetupException;
 import com.inventory.response.ResultEvent;
+import com.inventory.util.Constants;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -27,34 +21,48 @@ import org.slf4j.LoggerFactory;
 public class SupplierManager {
     private Profile profile;
     private Supplier supplier;
-    private final Logger logger = LoggerFactory.getLogger(EasyStatement.class);
+    private final Logger logger = LoggerFactory.getLogger(SupplierManager.class);
+    
     /**
      * This method will create a new supplier
-     * @param supplierInfo, 
+     * @param supplierInfo supplier info
+     * @return ResultEvent
+     * @author nazmul hasan on 28th december 2016
      */
     public ResultEvent createSupplier(SupplierInfo supplierInfo)
     {
         ResultEvent resultEvent = new ResultEvent();
-        //create a new user
         Connection connection = null;
         try {
             connection = Database.getInstance().getConnection();
             connection.setAutoCommit(false);
             
-            //right now group id constant. Later update it from configuraiton file
-            supplierInfo.getProfileInfo().setGroupId(1);
+            supplierInfo.getProfileInfo().setGroupId(Constants.GROUP_ID_SUPPLIER);
             profile = new Profile(connection);
-            int userId = profile.createProfile(supplierInfo.getProfileInfo()); 
-            
-            supplierInfo.getProfileInfo().setId(userId);
-            supplier = new Supplier(connection);
-            supplier.createSupplier(supplierInfo);
-
+            int profileId = profile.createProfile(supplierInfo.getProfileInfo()); 
+            if(profileId > 0)
+            {
+                supplierInfo.getProfileInfo().setId(profileId);
+                supplier = new Supplier(connection);
+                if(supplier.createSupplier(supplierInfo))
+                {
+                    resultEvent.setResponseCode(2000);
+                    resultEvent.setMessage("Supplier is created successfully.");
+                }
+                else
+                {
+                    //set error message here
+                }
+            }
+            else
+            {
+                //set error message here
+            }
             connection.commit();
             connection.close();
-            resultEvent.setResponseCode(2000);
-            resultEvent.setMessage("Supplier is created successfully.");
+            
         } catch (SQLException ex) {
+            logger.error(ex.getMessage());
             try {
                 if(connection != null){
                     connection.rollback();
@@ -63,18 +71,18 @@ public class SupplierManager {
             } catch (SQLException ex1) {
                 logger.error(ex1.getMessage());
             }
+            //set error message here
         } catch (DBSetupException ex) {
             logger.error(ex.getMessage());
+            //set error message here
         }
-        //add user under a group
-        //add address
-        //add supplier info
         return resultEvent;
     }
     
     /**
      * This method will return all suppliers
      * @return list, supplier list
+     * @author nazmul hasan on 28th december 2016
      */
     public List<SupplierInfo> getAllSuppliers()
     {
@@ -88,6 +96,7 @@ public class SupplierManager {
 
             connection.close();
         } catch (SQLException ex) {
+            logger.error(ex.getMessage());
             try {
                 if(connection != null){
                     connection.close();
@@ -101,11 +110,55 @@ public class SupplierManager {
         return supplierList;
     }
     
+    /**
+     * This method will update supplier info
+     * @param supplierInfo supplier info
+     * @return ResultEvent
+     * @author nazmul hasan on 28th december 2016
+     */
     public ResultEvent updateSupplier(SupplierInfo supplierInfo)
     {
         ResultEvent resultEvent = new ResultEvent();
-        resultEvent.setResponseCode(2000);
-        resultEvent.setMessage("Supplier info is updated successfully.");  
+        Connection connection = null;
+        try {
+            connection = Database.getInstance().getConnection();
+            connection.setAutoCommit(false);
+            
+            profile = new Profile(connection);
+            if(profile.updateProfile(supplierInfo.getProfileInfo()))
+            {
+                supplier = new Supplier(connection);
+                if(supplier.updateSupplierInfo(supplierInfo))
+                {
+                    resultEvent.setResponseCode(2000);
+                    resultEvent.setMessage("Supplier info is updated successfully.");  
+                }
+                else
+                {
+                    //set error message here
+                }
+            }
+            else
+            {
+                //set error message here
+            }
+            connection.commit();
+            connection.close();            
+        } catch (SQLException ex) {
+            logger.error(ex.getMessage());
+            try {
+                if(connection != null){
+                    connection.rollback();
+                    connection.close();
+                }
+            } catch (SQLException ex1) {
+                logger.error(ex1.getMessage());
+            }
+            //set error message here
+        } catch (DBSetupException ex) {
+            logger.error(ex.getMessage());
+            //set error message here
+        }
         return resultEvent;
     }
     

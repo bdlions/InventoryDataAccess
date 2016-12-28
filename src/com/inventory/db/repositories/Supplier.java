@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.inventory.db.repositories;
 
 import com.inventory.bean.SupplierInfo;
@@ -31,15 +26,49 @@ public class Supplier {
         this.connection = connection;
     }
     
-    public void createSupplier(SupplierInfo supplierInfo) throws DBSetupException, SQLException
+    /**
+     * This method will create a new supplier
+     * @param supplierInfo supplier info
+     * @throws DBSetupException
+     * @throws SQLException
+     * @return boolean
+     * @author nazmul hasan on 28th december 2016
+     */
+    public boolean createSupplier(SupplierInfo supplierInfo) throws DBSetupException, SQLException
     {
         try (EasyStatement stmt = new EasyStatement(connection, QueryManager.CREATE_SUPPLIER)) {
             stmt.setInt(QueryField.USER_ID, supplierInfo.getProfileInfo().getId());
             stmt.setString(QueryField.REMARKS, supplierInfo.getRemarks());
             stmt.executeUpdate();
         }
+        return true;
     }
     
+    /**
+     * This method will update supplier info
+     * @param supplierInfo supplier info
+     * @throws DBSetupException
+     * @throws SQLException
+     * @return boolean
+     * @author nazmul hasan on 28th december 2016
+     */
+    public boolean updateSupplierInfo(SupplierInfo supplierInfo) throws DBSetupException, SQLException
+    {
+        try (EasyStatement stmt = new EasyStatement(connection, QueryManager.UPDATE_SUPPLIER_INFO)) {
+            stmt.setString(QueryField.REMARKS, supplierInfo.getRemarks());
+            stmt.setInt(QueryField.USER_ID, supplierInfo.getProfileInfo().getId());
+            stmt.executeUpdate();
+        }
+        return true;
+    }
+    
+    /**
+     * This method will return all suppliers
+     * @throws DBSetupException
+     * @throws SQLException
+     * @return List supplier list
+     * @author nazmul hasan on 28th december 2016
+     */
     public List<SupplierInfo> getAllSuppliers()throws DBSetupException, SQLException
     {
         List<SupplierInfo> supplierList = new ArrayList<>();
@@ -50,15 +79,15 @@ public class Supplier {
             {
                 SupplierInfo supplierInfo = new SupplierInfo();
                 supplierInfo.setRemarks(rs.getString(QueryField.REMARKS));
-                ProfileInfo userInfo = new ProfileInfo();
-                userInfo.setId(rs.getInt(QueryField.USER_ID));
-                userInfo.setFirstName(rs.getString(QueryField.FIRST_NAME));
-                userInfo.setLastName(rs.getString(QueryField.LAST_NAME));
-                userInfo.setEmail(rs.getString(QueryField.EMAIL));
-                userInfo.setPhone(rs.getString(QueryField.PHONE));
-                userInfo.setFax(rs.getString(QueryField.FAX));
-                userInfo.setWebsite(rs.getString(QueryField.WEBSITE));
-                supplierInfo.setProfileInfo(userInfo);
+                ProfileInfo profileInfo = new ProfileInfo();
+                profileInfo.setId(rs.getInt(QueryField.USER_ID));
+                profileInfo.setFirstName(rs.getString(QueryField.FIRST_NAME));
+                profileInfo.setLastName(rs.getString(QueryField.LAST_NAME));
+                profileInfo.setEmail(rs.getString(QueryField.EMAIL));
+                profileInfo.setPhone(rs.getString(QueryField.PHONE));
+                profileInfo.setFax(rs.getString(QueryField.FAX));
+                profileInfo.setWebsite(rs.getString(QueryField.WEBSITE));
+                supplierInfo.setProfileInfo(profileInfo);
                 supplierList.add(supplierInfo);
             }
         }

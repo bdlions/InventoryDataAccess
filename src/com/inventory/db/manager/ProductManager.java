@@ -35,12 +35,17 @@ public class ProductManager {
         ResultEvent resultEvent = new ResultEvent();
         Connection connection = null;
         try {
-            connection = Database.getInstance().getConnection();
-            
+            connection = Database.getInstance().getConnection();            
             product = new Product(connection);
-            product.createProduct(productInfo);
-            resultEvent.setResponseCode(2000);
-            resultEvent.setMessage("Product is created successfully.");            
+            if(product.createProduct(productInfo))
+            {
+                resultEvent.setResponseCode(2000);
+                resultEvent.setMessage("Product is created successfully."); 
+            }
+            else
+            {
+                //set error message here
+            }                       
             connection.close();
         } catch (SQLException ex) {
             logger.error(ex.getMessage());
@@ -51,8 +56,10 @@ public class ProductManager {
             } catch (SQLException ex1) {
                 logger.error(ex1.getMessage());
             }
+            //set error message here
         } catch (DBSetupException ex) {
             logger.error(ex.getMessage());
+            //set error message here
         }
         return resultEvent;
     }

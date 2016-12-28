@@ -17,12 +17,14 @@ public final class QueryManager {
     public static final String UPDATE_PRODUCT = "db.query.update-product";
     public static final String SEARCH_PRODUCT_BY_NAME = "db.query.get-products-by-name";
     public static final String GET_ALL_PRODUCTS = "db.query.get-all-products";
-    public static final String CREATE_USER = "db.query.create-user";
+    public static final String CREATE_PROFILE = "db.query.create-user";
+    public static final String UPDATE_PROFILE = "db.query.update-user";
     public static final String ADD_USER_TO_GROUP = "db.query.add-user-to-group";
     public static final String GET_ALL_ADDRESS_TYPES = "db.query.get-all-address-types";
     public static final String GET_ALL_ADDRESS_CATEGORIES = "db.query.get-all-address-categories";
     public static final String ADD_USER_ADDRESS = "db.query.add-user-address";
     public static final String CREATE_SUPPLIER = "db.query.create-supplier";
+    public static final String UPDATE_SUPPLIER_INFO = "db.query.update-supplier-info";
     public static final String CREATE_CUSTOMER = "db.query.create-customer";
     public static final String ADD_PURCHASE_ORDER = "db.query.add-purchase-order";
     public static final String ADD_WAREHOUSE_PURCHASED_PRODUCT_LIST = "db.query.add-warehouse-purchased-product-list";

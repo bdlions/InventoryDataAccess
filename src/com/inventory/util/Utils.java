@@ -7,6 +7,7 @@ package com.inventory.util;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
 import java.util.TimeZone;
 
 /**
@@ -17,6 +18,17 @@ public class Utils {
     public Utils()
     {
     
+    }
+    
+    /**
+     * This method will generate a profile id
+     * @return int profile id
+     * @author nazmul hasan on 28th december 2016
+     */
+    public int generateProfileId()
+    {
+        Random random = new Random();
+        return random.nextInt(100000000) + 1;
     }
     
     /**

@@ -43,38 +43,46 @@ public class ProductManagerTest {
     public void createProductTest() 
     {
        ProductInfo productInfo1 = new ProductInfo();
-       productInfo1.setName("name");
-       productInfo1.setCode("code");
-       productInfo1.setLength("length");
-       productInfo1.setWidth("width");
-       productInfo1.setHeight("height");
-       productInfo1.setWeight("weight");
+       productInfo1.setName("pn1");
+       productInfo1.setCode("pc1");
+       productInfo1.setLength("pl1");
+       productInfo1.setWidth("pw1");
+       productInfo1.setHeight("ph1");
+       productInfo1.setWeight("pwt1");
        productInfo1.setUnitPrice(1000);
 
        ProductManager productManager = new ProductManager();
        ResultEvent resultEvent = productManager.createProduct(productInfo1);
-       System.out.println(resultEvent.getMessage());
+       System.out.println(resultEvent.toString());
     }
     
     //@Test
     public void updateProductTest() 
     {
        ProductInfo productInfo1 = new ProductInfo();
-       productInfo1.setId(6);
-       productInfo1.setName("name2");
-       productInfo1.setCode("code2");
-       productInfo1.setLength("length2");
-       productInfo1.setWidth("width2");
-       productInfo1.setHeight("height2");
-       productInfo1.setWeight("weight2");
+       productInfo1.setId(8);
+       productInfo1.setName("pn2");
+       productInfo1.setCode("pc2");
+       productInfo1.setLength("pl2");
+       productInfo1.setWidth("pw2");
+       productInfo1.setHeight("ph2");
+       productInfo1.setWeight("pwt2");
        productInfo1.setUnitPrice(2000);
 
        ProductManager productManager = new ProductManager();
        ResultEvent resultEvent = productManager.updateProduct(productInfo1);
-       System.out.println(resultEvent.getMessage());
+       System.out.println(resultEvent.toString());
     }
     
     @Test
+    public void getAllProductsTest() 
+    {
+       ProductManager productManager = new ProductManager();
+       List<ProductInfo> productList = productManager.getAllProducts();
+       System.out.println("Total products:"+productList.size());
+    }
+    
+    //@Test
     public void searchProductTest() 
     {
        ProductManager productManager = new ProductManager();

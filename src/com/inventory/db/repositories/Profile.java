@@ -8,12 +8,12 @@ import com.inventory.db.query.helper.QueryField;
 import com.inventory.db.query.helper.QueryManager;
 import com.inventory.db.query.helper.EasyStatement;
 import com.inventory.exceptions.DBSetupException;
+import com.inventory.util.Utils;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 /**
  *
@@ -29,25 +29,34 @@ public class Profile {
         this.connection = connection;
     }
     
-    public int createProfile(ProfileInfo userInfo) throws DBSetupException, SQLException
-    {
+    /**
+     * This method will create a new user profile
+     * @param profileInfo user profile info
+     * @throws DBSetupException
+     * @throws SQLException
+     * @return int new user profile id
+     * @author nazmul hasan on 28th december 2016
+     */
+    public int createProfile(ProfileInfo profileInfo) throws DBSetupException, SQLException
+    {        
         //right now random int is used. later get last inserted id
-        Random random = new Random();
-        int userId = random.nextInt(10000000) + 1;
-        userInfo.setId(userId);
-        
-        try (EasyStatement stmt = new EasyStatement(connection, QueryManager.CREATE_USER)) {
-            stmt.setInt(QueryField.ID, userId);
-            stmt.setString(QueryField.FIRST_NAME, userInfo.getFirstName());
-            stmt.setString(QueryField.LAST_NAME, userInfo.getLastName());
-            stmt.setString(QueryField.EMAIL, userInfo.getEmail());
-            stmt.setString(QueryField.PHONE, userInfo.getPhone());
-            stmt.setString(QueryField.FAX, userInfo.getFax());
-            stmt.setString(QueryField.WEBSITE, userInfo.getWebsite());
+        Utils utils = new Utils();
+        int profileId = utils.generateProfileId();
+        profileInfo.setId(profileId);        
+        try (EasyStatement stmt = new EasyStatement(connection, QueryManager.CREATE_PROFILE)) {
+            stmt.setInt(QueryField.ID, profileId);
+            stmt.setString(QueryField.FIRST_NAME, profileInfo.getFirstName());
+            stmt.setString(QueryField.LAST_NAME, profileInfo.getLastName());
+            stmt.setString(QueryField.EMAIL, profileInfo.getEmail());
+            stmt.setString(QueryField.PHONE, profileInfo.getPhone());
+            stmt.setString(QueryField.FAX, profileInfo.getFax());
+            stmt.setString(QueryField.WEBSITE, profileInfo.getWebsite());
+            stmt.setDouble(QueryField.CREATED_ON, utils.getCurrentUnixTime());
+            stmt.setDouble(QueryField.MODIFIED_ON, utils.getCurrentUnixTime());
             stmt.executeUpdate();
         }
-        this.addProfileToGroup(userInfo);
-        return userId;
+        this.addProfileToGroup(profileInfo);
+        return profileId;
     }
     
     public void addProfileToGroup(ProfileInfo userInfo) throws DBSetupException, SQLException
@@ -76,6 +85,31 @@ public class Profile {
                 stmt.executeUpdate();
             }
         }
+    }
+    
+    /**
+     * This method will update profile info
+     * @param profileInfo profile info
+     * @throws DBSetupException
+     * @throws SQLException
+     * @return boolean
+     * @author nazmul hasan on 28th december 2016
+     */
+    public boolean updateProfile(ProfileInfo profileInfo) throws DBSetupException, SQLException
+    {
+        Utils utils = new Utils();
+        try (EasyStatement stmt = new EasyStatement(connection, QueryManager.UPDATE_PROFILE)) {
+            stmt.setString(QueryField.FIRST_NAME, profileInfo.getFirstName());
+            stmt.setString(QueryField.LAST_NAME, profileInfo.getLastName());
+            stmt.setString(QueryField.EMAIL, profileInfo.getEmail());
+            stmt.setString(QueryField.PHONE, profileInfo.getPhone());
+            stmt.setString(QueryField.FAX, profileInfo.getFax());
+            stmt.setString(QueryField.WEBSITE, profileInfo.getWebsite());
+            stmt.setLong(QueryField.MODIFIED_ON, utils.getCurrentUnixTime());
+            stmt.setInt(QueryField.ID, profileInfo.getId());
+            stmt.executeUpdate();
+        }
+        return true;
     }
     
     /**
