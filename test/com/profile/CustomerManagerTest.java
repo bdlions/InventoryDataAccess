@@ -40,16 +40,16 @@ public class CustomerManagerTest {
     // The methods must be annotated with annotation @Test. For example:
     //
     
-    //@Test
+    @Test
     public void createCustomerTest() 
     {
         ProfileInfo profileInfo = new ProfileInfo();
         profileInfo.setFirstName("ca2");
         profileInfo.setLastName("cb2");
-        profileInfo.setEmail("cc2");
-        profileInfo.setFax("cd2");
-        profileInfo.setPhone("ce2");
-        profileInfo.setWebsite("cf2");
+        //profileInfo.setEmail("cc2");
+        //profileInfo.setFax("cd2");
+        //profileInfo.setPhone("ce2");
+        //profileInfo.setWebsite("cf2");
         
         CustomerInfo customerInfo = new CustomerInfo();
         customerInfo.setProfileInfo(profileInfo);
@@ -79,7 +79,7 @@ public class CustomerManagerTest {
         System.out.println(resultEvent.toString());
     }
     
-    @Test
+    //@Test
     public void getAllCustomers() 
     {
         CustomerManager customerManager = new CustomerManager();

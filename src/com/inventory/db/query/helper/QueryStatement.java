@@ -29,14 +29,14 @@ import com.inventory.util.DbQueryProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class EasyStatement implements Statement {
+public class QueryStatement implements Statement {
 
     /**
      * The statement this object is wrapping.
      */
     private final PreparedStatement statement;
 
-    private final Logger logger = LoggerFactory.getLogger(EasyStatement.class);
+    private final Logger logger = LoggerFactory.getLogger(QueryStatement.class);
     /**
      * Maps parameter names to arrays of ints which are the parameter indices.
      */
@@ -52,22 +52,20 @@ public class EasyStatement implements Statement {
      * @param query the parameterized query
      * @throws SQLException if the statement could not be created
      */
-    public EasyStatement(Connection connection, String query)
+    public QueryStatement(Connection connection, String query)
             throws SQLException {
         
         indexMap = new HashMap();
         paramList = new ArrayList();
-        String parsedQuery = parse(DbQueryProvider.get(query), indexMap, paramList);
-        statement = connection.prepareStatement(parsedQuery);
+        statement = connection.prepareStatement(query);
     }
     
-    public EasyStatement(Connection connection, String query, int returnGeneratedKeys)
+    public QueryStatement(Connection connection, String query, int returnGeneratedKeys)
             throws SQLException {
         
         indexMap = new HashMap();
         paramList = new ArrayList();
-        String parsedQuery = parse(DbQueryProvider.get(query), indexMap, paramList);
-        statement = connection.prepareStatement(parsedQuery, returnGeneratedKeys);
+        statement = connection.prepareStatement(query, returnGeneratedKeys);
     }
     
     public Set<String> getParameterNames() {

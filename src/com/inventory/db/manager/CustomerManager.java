@@ -47,16 +47,16 @@ public class CustomerManager {
                 if(customer.createCustomer(customerInfo))
                 {
                     resultEvent.setResponseCode(2000);
-                resultEvent.setMessage("Customer is created successfully.");
+                    resultEvent.setMessage("Customer is created successfully.");
                 }
                 else
                 {
-                    //set error message here
+                    resultEvent.setMessage("Error while creating customer info");
                 }
             }
             else
             {
-                //set error message here
+                resultEvent.setMessage("Error while creating customer profile");
             }
             connection.commit();
             connection.close();            
@@ -69,11 +69,12 @@ public class CustomerManager {
                 }
             } catch (SQLException ex1) {
                 logger.error(ex1.getMessage());
+                resultEvent.setMessage("Error while closing database connection:"+ex1.toString());
             }
-            //set error message here
+            resultEvent.setMessage("Error while creating a customer:"+ex.toString());
         } catch (DBSetupException ex) {
             logger.error(ex.getMessage());
-            //set error message here
+            resultEvent.setMessage("Database Setup error while creating a customer:"+ex.toString());
         }
         return resultEvent;
     }

@@ -99,6 +99,41 @@ public class Sale {
                 customerInfo.getProfileInfo().setFirstName(rs.getString(QueryField.FIRST_NAME));
                 customerInfo.getProfileInfo().setLastName(rs.getString(QueryField.LAST_NAME));
                 saleInfo.setCustomerInfo(customerInfo);
+                
+                ProductInfo productInfo1 = new ProductInfo();
+                productInfo1.setName("dummyname1");
+                productInfo1.setCode("dummycode1");
+                productInfo1.setUnitPrice(100);
+                ProductInfo productInfo2 = new ProductInfo();
+                productInfo2.setName("dummyname2");
+                productInfo2.setCode("dummycode2");
+                productInfo2.setUnitPrice(200);
+                
+                saleInfo.getProductList().add(productInfo1);
+                saleInfo.getProductList().add(productInfo2);
+                
+                saleList.add(saleInfo);
+            }
+        }
+        return saleList;
+    }
+    
+    public List<SaleInfo> getAllSaleOrdersByOrderNo(String orderNo) throws DBSetupException, SQLException
+    {
+        List<SaleInfo> saleList = new ArrayList<>();
+        try (EasyStatement stmt = new EasyStatement(connection, QueryManager.GET_ALL_SALE_ORDERS_BY_ORDER_NO)){
+            stmt.setString(QueryField.ORDER_NO, orderNo);
+            ResultSet rs = stmt.executeQuery();
+            while(rs.next())
+            {
+                SaleInfo saleInfo = new SaleInfo();
+                saleInfo.setOrderNo(rs.getString(QueryField.ORDER_NO));
+                saleInfo.setSaleDate(rs.getInt(QueryField.SALE_DATE));
+                saleInfo.setRemarks(rs.getString(QueryField.REMARKS));
+                CustomerInfo customerInfo = new CustomerInfo();
+                customerInfo.getProfileInfo().setFirstName(rs.getString(QueryField.FIRST_NAME));
+                customerInfo.getProfileInfo().setLastName(rs.getString(QueryField.LAST_NAME));
+                saleInfo.setCustomerInfo(customerInfo);
                 saleList.add(saleInfo);
             }
         }

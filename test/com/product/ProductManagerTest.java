@@ -39,17 +39,17 @@ public class ProductManagerTest {
     // TODO add test methods here.
     // The methods must be annotated with annotation @Test. For example:
     //
-    //@Test
+    @Test
     public void createProductTest() 
     {
        ProductInfo productInfo1 = new ProductInfo();
-       productInfo1.setName("pn1");
-       productInfo1.setCode("pc1");
-       productInfo1.setLength("pl1");
-       productInfo1.setWidth("pw1");
-       productInfo1.setHeight("ph1");
-       productInfo1.setWeight("pwt1");
-       productInfo1.setUnitPrice(1000);
+       productInfo1.setName("pn11");
+       productInfo1.setCode("pc11");
+       productInfo1.setLength("pl11");
+       productInfo1.setWidth("pw11");
+       productInfo1.setHeight("ph11");
+       productInfo1.setWeight("pwt11");
+       productInfo1.setUnitPrice(11000);
 
        ProductManager productManager = new ProductManager();
        ResultEvent resultEvent = productManager.createProduct(productInfo1);
@@ -74,7 +74,7 @@ public class ProductManagerTest {
        System.out.println(resultEvent.toString());
     }
     
-    @Test
+    //@Test
     public void getAllProductsTest() 
     {
        ProductManager productManager = new ProductManager();

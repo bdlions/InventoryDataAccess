@@ -37,10 +37,13 @@ public class ProductManager {
         try {
             connection = Database.getInstance().getConnection();            
             product = new Product(connection);
-            if(product.createProduct(productInfo))
+            int productId = product.createProduct(productInfo);
+            if(productId > 0)
             {
                 resultEvent.setResponseCode(2000);
-                resultEvent.setMessage("Product is created successfully."); 
+                resultEvent.setMessage("Product is created successfully.");
+                productInfo.setId(productId);
+                resultEvent.setResult(productInfo);
             }
             else
             {

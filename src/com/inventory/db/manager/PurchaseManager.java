@@ -10,6 +10,7 @@ import com.inventory.db.query.helper.EasyStatement;
 import com.inventory.db.repositories.Product;
 import com.inventory.db.repositories.Purchase;
 import com.inventory.exceptions.DBSetupException;
+import com.inventory.response.ResultEvent;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -23,8 +24,10 @@ import org.slf4j.LoggerFactory;
 public class PurchaseManager {
     private Purchase purchase;
     private final Logger logger = LoggerFactory.getLogger(EasyStatement.class);
-    public void addPurchaseOrder(PurchaseInfo purchaseInfo)
+    
+    public ResultEvent addPurchaseOrder(PurchaseInfo purchaseInfo)
     {
+        ResultEvent resultEvent = new ResultEvent();
         Connection connection = null;
         try {
             connection = Database.getInstance().getConnection();
@@ -32,6 +35,9 @@ public class PurchaseManager {
             
             purchase = new Purchase(connection);
             purchase.addPurchaseOrder(purchaseInfo);
+            
+            resultEvent.setResponseCode(2000);
+            resultEvent.setMessage("Purchase is executed successfully."); 
             
             connection.commit();
             connection.close();
@@ -46,7 +52,8 @@ public class PurchaseManager {
             }
         } catch (DBSetupException ex) {
             logger.error(ex.getMessage());
-        }        
+        } 
+        return resultEvent;
     }
     
     public List<PurchaseInfo> getAllPurchaseOrders()
@@ -74,6 +81,42 @@ public class PurchaseManager {
         return purchaseList;
     }
     
+    public ResultEvent getPurchaseOrderInfo(String orderNo)
+    {
+        ResultEvent resultEvent = new ResultEvent();
+        
+        PurchaseInfo purchaseInfo = new PurchaseInfo();
+        Connection connection = null;
+        try {
+            connection = Database.getInstance().getConnection();
+            
+            purchase = new Purchase(connection);
+            purchaseInfo = purchase.getPurchaseOrderInfo(orderNo);   
+            if(purchaseInfo.getOrderNo() != null)
+            {
+                resultEvent.setResponseCode(2000);
+                resultEvent.setResult(purchaseInfo);
+            }
+            else
+            {
+                resultEvent.setMessage("Invalid purchase order."); 
+            }
+            connection.close();
+        } catch (SQLException ex) {
+            logger.error(ex.getMessage());
+            try {
+                if(connection != null){
+                    connection.close();
+                }
+            } catch (SQLException ex1) {
+                logger.error(ex1.getMessage());
+            }
+        } catch (DBSetupException ex) {
+            logger.error(ex.getMessage());
+        }   
+        return resultEvent;
+    }
+    
     public List<PurchaseInfo> searchPurchaseOrders(String orderNo)
     {
         List<PurchaseInfo> purchaseList = new ArrayList<>();
@@ -82,7 +125,7 @@ public class PurchaseManager {
             connection = Database.getInstance().getConnection();
             
             purchase = new Purchase(connection);
-            purchaseList = purchase.getAllPurchaseOrders();
+            purchaseList = purchase.getAllPurchaseOrdersByOrderNo(orderNo);
             
             connection.close();
         } catch (SQLException ex) {

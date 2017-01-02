@@ -7,11 +7,13 @@ import com.inventory.bean.UOMInfo;
 import com.inventory.db.query.helper.QueryField;
 import com.inventory.db.query.helper.QueryManager;
 import com.inventory.db.query.helper.EasyStatement;
+import com.inventory.db.query.helper.QueryStatement;
 import com.inventory.exceptions.DBSetupException;
 import com.inventory.util.Utils;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,14 +36,26 @@ public class Product extends General{
      * @param productInfo product info
      * @throws DBSetupException
      * @throws SQLException
-     * @return boolean
+     * @return int last inserted id which is product id
      * @author nazmul hasan on 28th december 2016
      */
-    public boolean createProduct(ProductInfo productInfo)throws DBSetupException, SQLException
+    public int createProduct(ProductInfo productInfo)throws DBSetupException, SQLException
     {
+//        String sql = "insert into products(name, code, unit_price) values('qsname', 'qscode', 500)";
+//        try (QueryStatement queryStmt = new QueryStatement(connection, sql, Statement.RETURN_GENERATED_KEYS)) 
+//        {
+//            queryStmt.executeUpdate();
+//            ResultSet rs = queryStmt.getGeneratedKeys();
+//            rs.next();
+//            int lastInsertedId = rs.getInt(1);
+//            System.out.println(lastInsertedId);
+//        }
+        
+        
         //check product identity first
+        int lastInsertedId = 0;
         Utils utils = new Utils();
-        try (EasyStatement stmt = new EasyStatement(connection, QueryManager.CREATE_PRODUCT)) {
+        try (EasyStatement stmt = new EasyStatement(connection, QueryManager.CREATE_PRODUCT, Statement.RETURN_GENERATED_KEYS)) {
             //add some validation. If the values are not set then assign nulll instead of zero
             stmt.setInt(QueryField.CATEGORY_ID, productInfo.getProductCategoryInfo().getId());
             stmt.setInt(QueryField.TYPE_ID, productInfo.getProductTypeInfo().getId());
@@ -59,8 +73,11 @@ public class Product extends General{
             stmt.setDouble(QueryField.CREATED_ON, utils.getCurrentUnixTime());
             stmt.setDouble(QueryField.MODIFIED_ON, utils.getCurrentUnixTime());
             stmt.executeUpdate();
+            ResultSet rs = stmt.getGeneratedKeys();
+            rs.next();
+            lastInsertedId = rs.getInt(1);
         }
-        return true;
+        return lastInsertedId;
     }
     
     /**

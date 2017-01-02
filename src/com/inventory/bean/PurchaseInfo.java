@@ -25,7 +25,7 @@ public class PurchaseInfo {
     private SupplierInfo supplierInfo;
     public PurchaseInfo()
     {
-        productList = new ArrayList<>();
+        //productList = new ArrayList<>();
     }
 
     public int getId() {
@@ -93,6 +93,10 @@ public class PurchaseInfo {
     }
 
     public List<ProductInfo> getProductList() {
+        if(productList == null)
+        {
+            productList = new ArrayList<>();
+        }
         return productList;
     }
 

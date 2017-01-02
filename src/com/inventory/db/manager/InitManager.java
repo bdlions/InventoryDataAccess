@@ -12,6 +12,8 @@ public class InitManager {
     
     public boolean initConnection()
     {
+        ProfileManager profileManager = new ProfileManager();
+        profileManager.getAllAddressCategories();
         return true;
     }
 }

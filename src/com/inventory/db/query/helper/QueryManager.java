@@ -36,6 +36,8 @@ public final class QueryManager {
     public static final String GET_ALL_SUPPLIERS = "db.query.get-all-suppliers";
     public static final String GET_ALL_CUSTOMERS = "db.query.get-all-customers";
     public static final String GET_ALL_PURCHASE_ORDERS = "db.query.get-all-purchase-orders";
+    public static final String GET_ALL_PURCHASE_ORDERS_BY_ORDER_NO = "db.query.get-all-purchase-orders-by-order-no";
     public static final String GET_ALL_SALE_ORDERS = "db.query.get-all-sale-orders";
+    public static final String GET_ALL_SALE_ORDERS_BY_ORDER_NO = "db.query.get-all-sale-orders-by-order-no";
     public static final String GET_CURRENT_STOCKS = "db.query.get-current-stocks";
 }

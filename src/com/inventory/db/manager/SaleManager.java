@@ -12,6 +12,7 @@ import com.inventory.db.query.helper.EasyStatement;
 import com.inventory.db.repositories.Purchase;
 import com.inventory.db.repositories.Sale;
 import com.inventory.exceptions.DBSetupException;
+import com.inventory.response.ResultEvent;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -26,8 +27,9 @@ import org.slf4j.LoggerFactory;
 public class SaleManager {
     private Sale sale;
     private final Logger logger = LoggerFactory.getLogger(EasyStatement.class);
-    public void addSaleOrder(SaleInfo saleInfo)
+    public ResultEvent addSaleOrder(SaleInfo saleInfo)
     {
+        ResultEvent resultEvent = new ResultEvent();
         Connection connection = null;
         try {
             connection = Database.getInstance().getConnection();
@@ -35,7 +37,9 @@ public class SaleManager {
             
             sale = new Sale(connection);
             sale.addSaleOrder(saleInfo);
-            
+            resultEvent.setResponseCode(2000);
+            resultEvent.setMessage("Sale is executed successfully."); 
+                
             connection.commit();
             connection.close();
         } catch (SQLException ex) {
@@ -50,6 +54,7 @@ public class SaleManager {
         } catch (DBSetupException ex) {
             logger.error(ex.getMessage());
         }
+        return resultEvent;
     }
     
     public List<SaleInfo> getAllSaleOrders()
@@ -85,7 +90,7 @@ public class SaleManager {
             connection = Database.getInstance().getConnection();
             
             sale = new Sale(connection);
-            saleList = sale.getAllSaleOrders();
+            saleList = sale.getAllSaleOrdersByOrderNo(orderNo);
             
             connection.close();
         } catch (SQLException ex) {
